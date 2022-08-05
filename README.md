@@ -20,14 +20,12 @@
 ## Credit and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 
-
-
 Name of feature: lab 8
 
 Estimate of time needed to complete: 5 hour
 
 Start time: 5:30
 
-Finish time: _____
+Finish time:
 
-Actual time needed to complete: _____
+Actual time needed to complete:
