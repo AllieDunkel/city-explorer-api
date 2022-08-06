@@ -32,33 +32,28 @@ const PORT = process.env.PORT || 3001;
 //ROUTES we will use to access our end point
 
 //add weather route
-app.get('/weather', (request, response)=> {
+//why does this one have next? But the movie one doesn't?
+app.get('/weather', (request, response, next)=> {
+  //why do you need to have the query there?
   try{
   let lat= request.query.lat;
   let lon= request.query.lon;
-  let searchQuery= request.query.query;
-
-  //add data file and look at find(will find the first and returns only that match)
-  let cityLat= data.find(cityLat=>cityLat.lat===lat);
-    console.log('cityLat', cityLat);
-  let cityLon= data.find(cityLon=>cityLon.lon===lon);
-    console.log('cityLon', cityLon);
-  let citySearchQue= data.find(citySearchQue=>citySearchQue.city_name = searchQuery);
-    console.log('citySearchQue', citySearchQue);let weatherReturn=weatherData.data.map((dailyWeather) => new Forecast(dailyWeather));
-    response.send(weatherReturn);
-
-
+  let searchQuery= request.query.searchquery;
+  const URL= `` ;
+  let weatherData= await axios.get(URL)
+  let weatherForecast= weatherData.data.data.map (weatherData => new Forecast (weatherData));
   //now create a class below
+  response.status(200).send(weatherForecast);
+  //create a new instance of error
   } catch (error) {
-    //create a new instance of error
     next(error);
-    //this will instantiate any new error
+  //this will instantiate any new error
   }
 });
 
-app.get('*', (request, response) => {
-  response.send('The location was not found. Error 404');
-});
+  app.get('*' , (request, response ) => {
+    response.send('The lcoation was npt found. Error 404');
+  })
 
 //================================================//
 
@@ -67,8 +62,12 @@ app.get('*', (request, response) => {
 
 class Forecast{
   constructor(forecastObject) {
-    this.dataTime = data.dataTime;
-    this.description = 'Today will have a low of('
+    this.dateTime= forecastObject.dateTime;
+    //why does this one have weather but the other ones don't?
+    this.description= forecastObject.weather.description;
+    this.temp= forecastObject.temp;
+    this.minTemp= forecastObject.minTemp;
+    this.maxTemp= forecastObject.maxTemp;
   }
 }
 
