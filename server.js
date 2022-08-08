@@ -6,14 +6,15 @@ console.log('server is connected!!!')
 //REQUIRE
 //1. npm i express
 const express= require('express');
-
+const axios = require('axios');
 //how we bring in the env file
 require('dotenv').config();
-let weatherData = require('./data/weather.json');
+// let weatherData = require('./data/weather.json');
 
 //now include cors to share resourses over the web
 const cors= require('cors');
-const{response}= require('express');
+const{response, request}= require('express');
+const { default: axios } = require('axios');
 
 //================================================//
 
@@ -24,8 +25,36 @@ const{response}= require('express');
 const app= express();
 app.use(cors()); 
 
+// let cache= {};
+
+// try {
+//   let searchQueryFromTheFrontEnd= request.query.searchQuery;
+
+//   let key= searchQueryFromTheFrontEnd
+//   let timeToCache= 1000 * 60 * 60 * 24 * 30;
+//   console.log(timeToCache);
+
+//   let testToCache= 1000 * 10;
+//   //10 seconds
+//   console.log(testToCache);
+//   console.log('empty', cache);
+
+//   if(cache[key] && Date.now() - cache[key].timeStamp < testToCache) {
+//     console.log('it is in the cache');
+//     request.status(200).send(cache[key].data);
+//   } else {
+//     //we need to put it in cache
+//     console.log('it is not in the cache')
+//     let results= await axios.get(weatherData);let weatherInstance= results.data.results.map
+//   }
+
+
+// }
+
+
+
 // npm i dotenv - define our port, validate that my .env file is working.
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 //================================================//
 
@@ -39,7 +68,7 @@ app.get('/weather', (request, response, next)=> {
   let lat= request.query.lat;
   let lon= request.query.lon;
   let searchQuery= request.query.searchquery;
-  const URL= `` ;
+  const URL= `http://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lang=en&units=I&days=5&lat=${lat}&lon=${lon}`;
   let weatherData= await axios.get(URL)
   let weatherForecast= weatherData.data.data.map (weatherData => new Forecast (weatherData));
   //now create a class below
@@ -55,6 +84,23 @@ app.get('/weather', (request, response, next)=> {
     response.send('The lcoation was npt found. Error 404');
   })
 
+  app.get('/movies', getMovies);
+  async function getMovies(request, response) {
+    try {
+      let searchQuery= request.query.searchQuery;
+      console.log('front end query', searchQuery);
+      let URL=`https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${searchQuery}`;
+      let cityMovie= await axios.get(URL);
+      response.status(200).send(cityMovie.data);
+      cityMovie.data.results.map()
+      let moviesArray= cityMovie.data.results.map(movieData => new movie(movieData));
+      console.log('movies array', moviesArray);
+      response.status(200).send(moviesArray);
+    } catch (error){
+    console.log(error);
+  }
+}
+
 //================================================//
 
 //CLASSES
@@ -68,6 +114,14 @@ class Forecast{
     this.temp= forecastObject.temp;
     this.minTemp= forecastObject.minTemp;
     this.maxTemp= forecastObject.maxTemp;
+  }
+}
+
+class Movie{
+  constructor(movieObject) {
+    this.title= movieObject.title;
+    this.src= movieObject.poster_path? movieObject.poster_path : 'myImage.jpg';
+    this.overview;
   }
 }
 
